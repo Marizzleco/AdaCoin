@@ -1,0 +1,24 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest --passWithNoTests --watchAll --config ./adacoin/jest.config.json",
+    "dev": "node ./adacoin/src/main.js"
+  },
+  "keywords": [],
+  "author": "Marie Collinge",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^18.0.6",
+    "crypto-js": "^4.1.1",
+    "moment": "^2.29.4",
+    "node-fetch": "^3.2.6",
+    "npm": "^9.7.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^25.0.0",
+    "node": "^18.16.1"
+  },
+  "description": ""
+}
