@@ -187,7 +187,7 @@ class Chain {
     }
 
     let amount = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(credit - debit);
-    return `Your balance is ${amount}`;
+    return `${amount}`;
   }
 
   rebuild() {
@@ -197,5 +197,6 @@ class Chain {
     }
   }
 }
+
 
 module.exports = { ADACOIN_ERROR, AdaError, Block, Chain, TS};
