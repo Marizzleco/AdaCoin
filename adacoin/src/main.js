@@ -173,6 +173,9 @@ class Chain {
     if(this.chain[this.chain.length -1].transaction === "Genesis Block") {
       return 0;
     }
+    if(!(this.isValid())) {
+      return "Unable to calculate balance - invalid chain"
+    }
     for(let b = 1; b < this.chain.length; b++) {
     
       if(this.chain[b].transaction.credit) {

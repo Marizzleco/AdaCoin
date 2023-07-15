@@ -77,9 +77,9 @@ describe('3. validating timestamp test suite', () => {
   
   test('3.2 timestamp days since function returns correct time difference', () => {
     let ts = new TS();
-    expect(ts.dayssince('2023-07-14')).toBe(0);
-    expect(ts.dayssince('2022-07-14')).toBe(365);
-    expect(ts.dayssince('2024-07-14')).toBe(-366);
+    expect(ts.dayssince('2023-07-15')).toBe(0);
+    expect(ts.dayssince('2022-07-15')).toBe(365);
+    expect(ts.dayssince('2024-07-15')).toBe(-366);
     expect(() => {ts.dayssince('2023-13-13')}).toThrow("AdaCoin Error");
     expect(() => {ts.dayssince('2023')}).toThrow("AdaCoin Error");
   });
@@ -214,6 +214,31 @@ expect(adaWallet.chain[0].transaction).toBe("Genesis Block");
    expect(adaWallet.chain.length).toBe(2); 
     adaWallet.addblock(new Block( '2023-07-03', { credit: '20.00', tid: 'A0002' }));
     adaWallet.addblock(new Block( '2023-07-03', { debit: '20.00', tid: 'A0003' }));
+    expect(adaWallet.chain).toEqual([{
+        ts: '2023-07-15',
+        transaction: 'Genesis Block',
+        phash: 0,
+        hash: '7573bf320bb8d36b5853c34f65d78d0623d0011c460a583ce5f8a05c8e438069'
+      },
+{
+        ts: '2023-07-03',
+        transaction: { credit: '20.00', tid: 'A0001' },
+        phash: '7573bf320bb8d36b5853c34f65d78d0623d0011c460a583ce5f8a05c8e438069',
+        hash: '2b21f9236870550d0834c6dcac796e9728afe6a92fea0574584c8b65880daf2e'
+      },
+{
+        ts: '2023-07-03',
+        transaction: { credit: '20.00', tid: 'A0002' },
+        phash: '2b21f9236870550d0834c6dcac796e9728afe6a92fea0574584c8b65880daf2e',
+        hash: '5d88c344e7793f0f1a035d61ff3fa8373df1be1cd7ce4238c073d54e1d2d6ab4'
+      },
+{
+        ts: '2023-07-03',
+        transaction: { debit: '20.00', tid: 'A0003' },
+        phash: '5d88c344e7793f0f1a035d61ff3fa8373df1be1cd7ce4238c073d54e1d2d6ab4',
+        hash: '172c0a703031b321fecf209eac195df1a5b51fb72e50fdaaf9eb4d1c5bb53264'
+      }
+    ])
     expect(adaWallet.isValid()).toBe(true);
     expect(adaWallet.chain.length).toBe(4);
   });
@@ -224,20 +249,27 @@ expect(adaWallet.chain[0].transaction).toBe("Genesis Block");
     expect(adaWallet.chain.length).toBe(1);
   });
 
-  test('5.4 does not add a block with invalid date and transaction to the chain', () => {
+  test('5.4 does not add a block with invalid transaction to the chain', () => {
+    let adaWallet = new Chain();
+    expect(()=> {adaWallet.addblock(new Block('2024-01-02', {'Credit': '25.50', tid: 'A0001'}))}).toThrow(AdaError);
+    expect(adaWallet.chain.length).toBe(1);
+  });
+
+  test('5.5 does not add a block with invalid date and transaction to the chain', () => {
     let adaWallet = new Chain();
     expect(() => {adaWallet.addblock(new Block('2024-01-02', {credit: 2.5, tid: 'A0001'}))}).toThrow(Error);
     expect(adaWallet.chain.length).toBe(1);
   });
 
-  test('5.5 does not accept duplicate ids of blocks', () => {
+  test('5.6 does not accept duplicate ids of blocks', () => {
     let adaWallet = new Chain();
     adaWallet.addblock(new Block( '2023-07-03', { credit: '20.00', tid: 'A0001' }));
     adaWallet.addblock(new Block( '2023-07-03', { debit: '20.00', tid: 'A0001' }));
+
     expect(adaWallet.chain.length).toBe(2);
   });
 
-  test('5.6 is valid chain function returns true if valid', () => {
+  test('5.7 is valid chain function returns true if valid', () => {
     let adacoin = new Chain();
     adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0001' }));
     adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0002' }));
@@ -245,7 +277,7 @@ expect(adaWallet.chain[0].transaction).toBe("Genesis Block");
     expect(adacoin.isValid()).toBe(true);
   });
   
-  test('5.7 is valid chain function returns false if block is edited', () => {
+  test('5.8 is valid chain function returns false if block is edited', () => {
     let adacoin = new Chain();
     adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0001' }));
     adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0002' }));
@@ -254,7 +286,7 @@ expect(adaWallet.chain[0].transaction).toBe("Genesis Block");
     expect(adacoin.isValid()).toBe(false);
   });
   
-  test('5.8 delete an item in the chain returns false for valid chain', () => {
+  test('5.9 delete an item in the chain returns false for valid chain', () => {
     let adacoin = new Chain();
     adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0001' }));
     adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0002' }));
@@ -263,7 +295,7 @@ expect(adaWallet.chain[0].transaction).toBe("Genesis Block");
     expect(adacoin.isValid()).toBe(false);
   });
 
-  test('5.9 replace item into the chain returns false for valid chain', () => {
+  test('5.10 replace item into the chain returns false for valid chain', () => {
     let adaWallet = new Chain();
     let badBlock = new Block('2023-07-12', { credit: '20.00', tid: 'A0003' });
     
@@ -273,7 +305,7 @@ expect(adaWallet.chain[0].transaction).toBe("Genesis Block");
     expect(adaWallet.isValid()).toBe(false);
   });
 
-  test('5.10 delete item into the chain returns false for valid chain', () => {
+  test('5.11 delete item in the chain returns false for valid chain', () => {
     let adaWallet = new Chain();
     let badBlock = new Block('2023-07-12', { credit: '20.00', tid: 'A0003' });
     
@@ -281,6 +313,11 @@ expect(adaWallet.chain[0].transaction).toBe("Genesis Block");
     adaWallet.addblock(new Block( '2023-07-12', { debit: '20.00', tid: 'A0002' }));
     adaWallet.chain.splice(1, 0, badBlock)
     expect(adaWallet.isValid()).toBe(false);
+  });
+
+  test('5.12 no chain exists', () => {
+
+    expect(() => {adaWallet.addblock(new Block( '2023-07-12', { credit: '20.00', tid: 'A0001' }))}).toThrow(Error);
   });
   
   
@@ -341,6 +378,16 @@ describe('6. balance feature test suite', () => {
     adaWallet.addblock(new Block( '2023-07-03', { debit: '15.25', tid: 'A0002' }));
     adaWallet.addblock(new Block( '2023-07-03', { credit: '8.75', tid: 'A0003' }));
     expect(adaWallet.balance()).toBe("£4.00");
+  });
+
+    test('6.9 invalid chain balance method', () => {
+    let adacoin = new Chain();
+    adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0001' }));
+    adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0002' }));
+    adacoin.addblock(new Block( '2023-07-02', { credit: '25.50', tid: 'A0003' }));
+    adacoin.chain[2].transaction = {'credit': '200.00'};
+    expect(adacoin.isValid()).toBe(false);
+    expect(adacoin.balance()).toBe("Unable to calculate balance - invalid chain");
   });
   
 });
